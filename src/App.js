@@ -6,11 +6,11 @@ import './App.css';
 function App() {
   const [movies, setMovies] = useState([]);
 
-  function fetchMoviesHandler(){
-    fetch('https://swapi.dev/api/films/')
-    .then(resp => resp.json())
-    .then(data => {
-      const tranformedMovies = data.results.map(movie => {
+  async function fetchMoviesHandler(){
+    try { 
+      const reponse = await fetch('https://swapi.dev/api/films/');
+      const resultToJSON = await reponse.json();
+      const tranformedMovies = resultToJSON.results.map(movie => {
         return {
           id: movie.episode_id,
           title: movie.title,
@@ -19,10 +19,10 @@ function App() {
         }
       })
       setMovies(tranformedMovies);
-    })
-    // .then(data => {
-    //   console.log(data.body);
-    // })
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong!!");
+    }
   }
 
   return (
