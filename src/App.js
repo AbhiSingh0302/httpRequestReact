@@ -8,6 +8,34 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [fetchRequestInterval, setFetchRequestInterval] = useState(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    opening_text: "",
+    release_date: ""
+  })
+
+  const submitHandler = e => {
+    e.preventDefault();
+    console.log(formData);
+  }
+
+  const titleChangeHandler = (e) => {
+    setFormData(pre => {
+      return {...pre, title: e.target.value}
+    })
+  }
+
+  const openingTextChangeHandler = (e) => {
+    setFormData(pre => {
+      return {...pre, opening_text: e.target.value}
+    })
+  }
+
+  const releaseDateChangeHandler = (e) => {
+    setFormData(pre => {
+      return {...pre, release_date: e.target.value}
+    })
+  }
 
   const fetchMoviesHandler = useCallback(async function(){
     try { 
@@ -64,11 +92,6 @@ function App() {
 
   if(error){
     content = <p>{error}</p>;
-    // const fetchRequestInterval = setInterval(() => {
-    //   // console.log("timeout");
-    //   fetchMoviesHandler();
-    //   clearInterval(fetchRequestInterval);
-    // },5000)
     function stopTimer(){
       clearInterval(fetchRequestInterval);
     }
@@ -83,6 +106,23 @@ function App() {
 
   return (
     <React.Fragment>
+    <section>
+      <form onSubmit={submitHandler}>
+        <div>
+          <p>Title</p>
+        <input type='text' value={formData.title} onChange={titleChangeHandler}/>
+        </div>
+        <div>
+          <p>Opening Text</p>
+        <input type='text' value={formData.opening_text} onChange={openingTextChangeHandler}/>
+        </div>
+        <div>
+          <p>Release Date</p>
+        <input type='date' value={formData.release_date} onChange={releaseDateChangeHandler}/>
+        </div>
+        <button type='submit' style={{marginTop: '5px'}}>Add Movie</button>
+      </form>
+    </section>
       <section>
         <button onClick={fetchMoviesHandler}>Fetch Movies</button>
         {cancelButton}
