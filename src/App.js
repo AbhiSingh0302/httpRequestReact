@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -9,27 +9,10 @@ function App() {
   const [error, setError] = useState("");
   const [fetchRequestInterval, setFetchRequestInterval] = useState(null);
 
-  useEffect(() => {
-    if(error){
-
-      const intervalId = setInterval(() => {
-        fetchMoviesHandler();
-      }, 5000);
-      setFetchRequestInterval(intervalId);
-      
-      // Clean up the interval when the component unmounts
-      return () => {
-        if (intervalId) {
-          clearInterval(intervalId);
-        }
-      };
-    }
-  }, [error]);
-
-  async function fetchMoviesHandler(){
+  const fetchMoviesHandler = useCallback(async function(){
     try { 
       setIsLoading(true);
-      const reponse = await fetch('https://swapi.dev/api/film/');
+      const reponse = await fetch('https://swapi.dev/api/films/');
       if(!reponse.ok){
         throw new Error("Something went wrong ....Retrying")
       }
@@ -48,7 +31,29 @@ function App() {
       setError(error.message);
       setIsLoading(false);
     }
-  }
+  },[])
+
+  useEffect(() => {
+    fetchMoviesHandler();
+  },[fetchMoviesHandler]);
+
+  useEffect(() => {
+    if(error){
+
+      const intervalId = setInterval(() => {
+        fetchMoviesHandler();
+      }, 5000);
+      setFetchRequestInterval(intervalId);
+      
+      // Clean up the interval when the component unmounts
+      return () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+        }
+      };
+    }
+  }, [error,fetchMoviesHandler]);
+
 
   let content = <p>Found no movies</p>;
   let cancelButton = "";
